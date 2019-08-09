@@ -17,7 +17,7 @@
   + If we change this later, won't have documentation on what this method should do
 + So let's actually make a file that we can run that will test this method for us, and let us run it in case anything changes
   + `touch`app_test.rb`
-+ Write a simple statment to check the answer and see if the test failed or not
++ Write a simple statement to check the answer and see if the test failed or not
 ```
 require_relative './app.rb'
 
