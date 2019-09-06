@@ -5,7 +5,6 @@
 + Use tests to guide the flow of developing an application
 + Explore the RSpec testing environment
 + Use a pre-written test to determine what a method should do or return
-+ Predict what error message a test will throw when executed
 
 ## Lesson
 + Hi folks, this is Ian from Flatiron School. In this video, we're going to look at Testing and Test Driven Development.
@@ -14,7 +13,6 @@
   + We will use tests to guide the flow of developing an application
   + We'll explore the RSpec testing environment
   + Also we'll use a pre-written test to determine what a method should do or return
-  + And we'll try to predict what error message a test will throw when executed
 + So, to summarize, our goal is really that you can understand the importance of tests, and read tests when doing labs.
 
 ### Intro to Testing
@@ -163,13 +161,131 @@ RSpec.configure do |config|
   ## Rest of configuration -
 end
 ```
-+ And now those colors will be reflected.
++ And now those colors will be reflected. So that can be helpful if you want or need to use different colors.
 
 ### Using Tests in Learn Labs
-+ Open a lab, open up the test file
-+ Read the tests - explain describe and it
-+ Show running and seeing the failure - we can use the errors to guide us
-+ Show running with fail-fast to see only one error at a time
+
++ So we've looked at writing tests. Most of the time though, at Flatiron School, we'll be using tests that someone else wrote to guide our programming.
++ Let's take a look at how we can use the tests to our advantage and what this might look like.
++ I'm going to open up a lab here - this lab is called Methods / Default Values. So let's take a look here.
++ The instructions here say we're meant to define a method that takes in two arguments, and one optional argument.
++ It should print a string to the console describing the meal, and also return that string.
++ Cool, awesome - so let's actually use the test file to guide how we develop.
++ We're going to do a modified version of Test Driven Development, or TDD. Typically in TDD, you write a test, then write just enough code to pass that test.
++ Then you write another test, and change your code so that it passes both tests, and keep going in that fashion until your app does everything it needs to do.
++ In our case, the tests are already written for us, but by solving them one at a time we can follow a bit of the same pattern.
++ So, the first thing I want to do is run `learn` - the `learn` gem that we use actually is just a wrapper for rspec. So it just runs out test suite and then tells learn to make sure our lights turn the right color.
++ We can also run this with an option called `fail-fast` - this means that if we fail one test, our test suite will stop and we'll just see one failure at a time.
++ So let's run that for this lab: `learn --fail-fail`
++ And we see our first test is failing. Let's go ahead and take a look in the spec file:
+```ruby
+require 'spec_helper'
+
+describe '#meal_choice' do
+  it 'should default to meat for the protein' do
+    expect(meal_choice("broccoli", "macaroni")).to eq("A plate of meat with broccoli and macaroni.")
+  end
+
+  it 'should allow you to set a protein' do
+    expect(meal_choice("broccoli", "macaroni", "tofu")).to eq("A plate of tofu with broccoli and macaroni.")
+  end
+
+  it 'should puts "What a nutritious meal!" and your order to the console' do
+    expect($stdout).to receive(:puts).with("What a nutritious meal!")
+    expect($stdout).to receive(:puts).with("A plate of meat with broccoli and macaroni.")
+    meal_choice("broccoli", "macaroni")
+  end
+end
+```
++ Looking at the first test, we see that we're calling a method called `meal_choice`, and passing in two arguments. We then expect the output to be this string: "A plate of meat with broccoli and macaroni."
++ If I look at my error message, I see that this method is not defined. I'm going to do the minimum amount of work I need to do fix that error, which is to simply define that method. So in the other file:
+```ruby
+def meal_choice
+end
+```
++ When I run the tests again, I don't expect to pass. But I do expect to get a new error message, and that's good, that's progress. Let's run this again using `learn --fail-fast`
++ Cool, so now we see a new error: `Wrong number of arguments - given 2, expected 0` Why do you think that is?
++ Looking at the test, we see that our test is passing two arguments, but our method definition only takes in two. What's the least amount of work I can do to pass this test?
++ Yep, I'll make my method take in two arguments. Some developers, when doing TDD, will actually just use like an underscore for the name.
+```ruby
+def meal_choice(arg1, arg2)
+end
+```
++ Cool, so let's run this again now. So now, I see that, my program doesn't throw an error, but the method doesn't do what it's supposed to do. The real easiest way I could get this to work is to simply copy and past that string as the return value.
+```ruby
+def meal_choice(arg1, arg2)
+  "A plate of meat with broccoli and macaroni."
+end
+```
++ Awesome, and now I see my test is passing green and I'm on to my next failure. The thing is...I don't feel great about the way I'm passing this test. See how this method takes in two arguments? I'm actually ignoring those right now - this meal choice is kind of hard coded right now. So that's not great. So I'm going to do a step called refactoring.
++ Refactoring is when you change how the code does something. So I'm going to make a change, and I expect this method to behave the same way.
++ I'll give names to these arguments - let's call them `veg` and `starch`, then I'll interpolate those values into the string.
+```ruby
+def meal_choice(veg, starch)
+  "A plate of meat with #{veg} and #{starch}."
+end
+```
++ Cool, and that test still passes. So let's move on to the next test - now, for this one, for also getting a wrong number of arguments error - given three, expected 2.
++ And if I look at the spec, I can see that in this one they're passing in a third argument of "tofu". So now, I'm going to try to fix this test without breaking my first test. So I can't just do this:
+```ruby
+def meal_choice(veg, starch, protein)
+  "A plate of meat with #{veg} and #{starch}."
+end
+```
++ Because that will break my first test. Instead, I need to make that third argument optional. So I can now use a default value. And that should satisfy both tests.
+```ruby
+def meal_choice(veg, starch, protein="meat")
+  "A plate of #{protein} with #{veg} and #{starch}."
+end
+```
++ Awesome, so we're passing the first two tests. Reading this next one, there's something new that we haven't seen in rspec yet. But I bet you can guess what this does. Any ideas?
++ So, we're saying - hey, when we call this method, I expect that puts is going to get called, and it's going to get this message. The first message it expects to get is "What a nutritious meal!"
++ So let's add a puts statement to make that test pass
+```ruby
+def meal_choice(veg, starch, protein="meat")
+  puts "What a nutritious meal!"
+  "A plate of #{protein} with #{veg} and #{starch}."
+end
+```
++ Cool, and now we need to puts the second line as well.
+```ruby
+def meal_choice(veg, starch, protein="meat")
+  puts "What a nutritious meal!"
+  puts "A plate of #{protein} with #{veg} and #{starch}."
+end
+```
++ Whoops, and that doesn't work, because now we aren't returning the string. Puts always returns `nil` - so we need to return that string afterwards.
+```ruby
+def meal_choice(veg, starch, protein="meat")
+  puts "What a nutritious meal!"
+  puts "A plate of #{protein} with #{veg} and #{starch}."
+  return "A plate of #{protein} with #{veg} and #{starch}."
+end
+```
++ So this works, all of our tests are passing - awesome job! Now, I'm just going to do a bit of refactoring. Ruby actually has implicit returns, so I don't need to use the return keyword here.
+```ruby
+def meal_choice(veg, starch, protein="meat")
+  puts "What a nutritious meal!"
+  puts "A plate of #{protein} with #{veg} and #{starch}."
+   "A plate of #{protein} with #{veg} and #{starch}."
+end
+```
++ Run the tests and - yep, still all passing. Great. Now, I don't love that I'm duplicating this string like this, so maybe I'll just make a local variable called `meal` and then I can reference that.
+```ruby
+def meal_choice(veg, starch, protein="meat")
+  meal = "A plate of #{protein} with #{veg} and #{starch}."
+  puts "What a nutritious meal!"
+  puts
+  meal
+end
+```
++ Awesome, so this works and I feel pretty good about this. So that's it - we've used the specs as our guide and as you can see, they're not too bad. Definitely read them as you are working and use them to help guide you. So to recap what we've learned:
+
++ We explained the importance of test automation in code - this makes it easy to make changes, and let other developers know that our code works, and also helps us as we're building our apps.
++ We used tests to guide the flow of developing an application - both in a lab and also on our own
++ We explored the RSpec testing environment, including some configuration options, and some of the most useful methods
++ And we used a pre-written test to determine what a method should do or return, and let that guide our development workflow
++ Thanks so much for watching - happy coding!
 
 ## Resoruces
 + [Configure RSpec Colors](https://relishapp.com/rspec/rspec-core/v/2-14/docs/formatters/configurable-colors)
