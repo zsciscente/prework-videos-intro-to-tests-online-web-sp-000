@@ -15,6 +15,7 @@
   + We'll explore the RSpec testing environment
   + Also we'll use a pre-written test to determine what a method should do or return
   + And we'll try to predict what error message a test will throw when executed
++ So, to summarize, our goal is really that you can understand the importance of tests, and read tests when doing labs.
 
 ### Intro to Testing
 
@@ -79,11 +80,96 @@ end
 
 ### RSpec
 
-+ This is our first intro to automated testing - and naturally this test is a bit hard to read.
-+ Use a library called rspec
-+ Demo install rspec, make an app_spec file and write a simple test in it.
++ This is our first intro to automated testing - and naturally this test is a bit hard to write and read.
++ There's a lot of repetition here with the setup, and the expectation is a bit tough here too.
++ Instead, we can use a gem for this. A gem, or library, is just some prewritten code designed to be used in other programs.
++ The idea is that you can easily include some pre-defined methods and files in your applications.
++ We here at Flatiron School really like a library called RSpec for Ruby - it has a nice, readable syntax and it easy to use.
++ So, to get started, I need to install this gem. Here in the Learn IDE, I know that it's already installed, but if I were working on a computer that didn't have it, I could install it by doing `gem install rspec`
++ And now, I can set this project up as an rspec project by running `rspec --init `
++ What did that do? Well, let's take a look here. This created two files - the first is a `.rspec` file. This file contains some options for how we run our tests.
++ The second file is in a directory called `spec` called `spec_helper`. This file has a bunch of configuration options.
++ I can see in my RSpec file that by default, we'll include this file every time we run rspec, which is great.
++ So to run all of our tests, I can simply run `rspec` from the terminal - and this will look at every file in the spec directory that ends in `_spec` and run it for me.
++ So by convention, we name our rspec files to match the filename that we're testing, and add underscore-spec to the end. So in my case, I'm testing this file called `conversions.rb`, so I'm going to make a file called `conversions_spec.rb`
++ And just for fun, as a demo - I'll just put a puts statement in that file. `puts "Tests are running..."`
++ From my terminal now, I'll run `rspec` - and let's take a look at this output.
++ So I see my puts statement got printed here - then I see "No Examples Found", which makes sense because I haven't written any tests.
++ So let's write one - RSpec has a few built in methods that we can use to write tests. One big advantage to using rspec is that we can give ourselves some organization.
++ First, let's create a describe block. This should be a high level description of what we're testing.
+```ruby
+describe "conversions" do
+
+end
+```
++ We can also nest these blocks to have different descriptions. In this case, I'll make a second one to describe the method name we're testing. By convention, for instance methods like this, I'll put a pound sign in front of the name.
+```ruby
+describe "conversions" do
+  describe '#ounces_to_grams' do
+
+  end
+end
+```
++ Now, let's write our first test. Here, we'll use a method called `it`. When using `it`, we'll give it a string where we'll describe what the method should do, then in the block we'll actually test it out.
++ First, let's add our expectation:
+```ruby
+describe "conversions" do
+  describe '#ounces_to_grams' do
+    it 'given zero, returns 0.0'
+  end
+end
+```
++ Now, if we run RSPEC, we see we have this pending test - so it's a test that's not yet implemented. Some folks will actually write out a bunch of these first and then implement them one at a time.
++ Next, we can test this by actually writing the code, and use a method called `expect` to test that it did what we wanted. I'll show you the syntax for that now:
+```ruby
+describe "conversions" do
+  describe '#ounces_to_grams' do
+    it 'given zero, returns 0.0' do
+      grams = ounces_to_grams(0)
+      expect(grams).to eq(0.0)
+    end
+  end
+end
+```
++ So to break this down, we simply call the method and store the return value in a local variable called `grams`. We then use the expect method to say that we expect(grams) to be equal to 0.0
++ If we run this now, we see that the test fails - `undefined method` - this is because our RSpec file doesn't know anything about the file where we define that method. We need to require it - we can do that either in the spec file directly, or in our spec helper. I'll go ahead and include it here directly for now.
+```ruby
+require_relative '../conversions.rb'
+
+describe "conversions" do
+  describe '#ounces_to_grams' do
+    it 'given zero, returns 0.0' do
+      grams = ounces_to_grams(0)
+      expect(grams).to eq(0.0)
+    end
+  end
+end
+```
++ Great, and now we see our test passes! A couple of quick configuration options to know about.
++ First, some folks prefer a more verbose output from their tests. I can add an option to my .rspec file to add documentation to the test runs.
+```
+--require spec_helper
+--format documentation
+```
++ Running this now - I can see the descriptions I wrote in my describe and it blocks, so that can be nice if you prefer.
++ Finally, as you may or may not be able to tell, by default RSpec displays passing tests in green and failing tests in red.
++ This can be tough for many people to see, as a lot of folks have trouble telling red from green. You can change the color configuration in the `spec_helper` file if you like.
+```ruby
+RSpec.configure do |config|
+  # Adds color configuration
+  config.failure_color = :magenta # or whatever color you like
+  config.success_color = :cyan
+
+  ## Rest of configuration -
+end
+```
++ And now those colors will be reflected.
+
+### Using Tests in Learn Labs
 + Open a lab, open up the test file
 + Read the tests - explain describe and it
 + Show running and seeing the failure - we can use the errors to guide us
 + Show running with fail-fast to see only one error at a time
-+ Show that you should only fix that one particular error - do the minimum amount of work possible
+
+## Resoruces
++ [Configure RSpec Colors](https://relishapp.com/rspec/rspec-core/v/2-14/docs/formatters/configurable-colors)
