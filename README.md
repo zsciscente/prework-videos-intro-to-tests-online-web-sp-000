@@ -7,6 +7,9 @@
 + Use a pre-written test to determine what a method should do or return
 
 ## Lesson
+
+<iframe width="100%" height="720" src="https://www.youtube.com/embed/x88P0ib9DuM?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe>
+
 + Hi folks, this is Ian from Flatiron School. In this video, we're going to look at Testing and Test Driven Development.
 + Our learning goals for this video:
   + We'll explain the importance of test automation in code
